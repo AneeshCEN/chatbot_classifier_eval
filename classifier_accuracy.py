@@ -28,7 +28,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
 count_vect = CountVectorizer()
 tfidf_transformer = TfidfTransformer()
 
-data = pd.read_csv('C:/Users/ANEESH/Desktop/bot_training.csv')
+data = pd.read_csv('C:/Users/aneesh.c/chatbot_classifier_eval/bot_training.csv')
 data['User_Queries'] = data['User_Queries'].astype(str)
 train_data_columns = data.columns.drop(['Label'])
 
@@ -38,7 +38,7 @@ X = X_train_tfidf.toarray()
 
 x_train,x_test, y_train,y_test = train_test_split(X,
                                                   data['Label'],
-                                                  random_state = 1)
+                                                  random_state = 0)
 
 
 result_cols = ["Classifier", "Accuracy"]
@@ -74,6 +74,16 @@ for clf in classifiers:
     
     acc_field1 = pd.DataFrame([[name, precision, rec, f_measure]], columns=result_cols1)
     result_frame1 = result_frame1.append(acc_field1)
+    confusion_mc = confusion_matrix(y_test, predicted)
+    df_cm = pd.DataFrame(confusion_mc, 
+                     index = [i for i in range(1,4)], columns = [i for i in range(1,4)])
+    plt.figure(figsize=(5.5,4))
+    sns.heatmap(df_cm, annot=True)
+    plt.title(name+'\nAccuracy:{0:.3f}'.format(acc))
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
+plt.figure()
 sns.set_color_codes("muted")
 sns.barplot(x='Accuracy', y='Classifier', data=result_frame, color="r")
 
@@ -83,6 +93,9 @@ plt.show()
 
 df1 = pd.melt(result_frame1, id_vars=['Classifier']).sort_values(['variable','value'])
 
-
+plt.figure()
 sns.barplot(x="Classifier", y="value", hue="variable", data=df1)
 plt.xticks(rotation=90)
+plt.show()
+
+
